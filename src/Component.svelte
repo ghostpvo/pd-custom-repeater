@@ -81,9 +81,9 @@
       return specialRiskValueBuilder(value, 'html')
     } else if (key === "specialDateTime") {
       return specialDateTimeBuilder(value)
-    } else {
-      return value[key] ? value[key] : '-'
     }
+    const keys = key.split('.');
+    return value[keys] ? value[keys] : '-'
   }
 
   const specialRiskValueBuilder = function (value, view) {
