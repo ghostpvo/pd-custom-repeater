@@ -84,7 +84,8 @@
     }
     
     if (typeof value[key] === 'object') {
-      return value[key].primaryDisplay ? value[key].primaryDisplay : '-'
+      return value[key][0].primaryDisplay;
+      // return value[key].primaryDisplay ? value[key].primaryDisplay : '-'
     }
 
     return value[key] ? value[key] : '-'
