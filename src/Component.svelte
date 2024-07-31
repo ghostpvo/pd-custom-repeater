@@ -60,6 +60,8 @@
     sortingStatus.sortedBy = sortingSource
     repeaterData = [...repeaterData]
   }
+// ---
+// END SORTING SECTION
 
 // CUSTOM FIELDS SECTION
   // Adding of a value field, which does not come from Budibase
@@ -124,7 +126,15 @@
 
     return `${day}.${month}.${year} ${hours}:${minutes}`
   }
-// End CUSTOM FIELDS SECTION
+// END CUSTOM FIELDS SECTION
+
+// ACTIONS
+  // Link to item card page
+  const moveToCard = function (id) {
+    const targetUrl = window.location.href + `/${id}`
+    window.location.href = targetUrl
+  }
+// END ACTIONS
 </script>
 
 <div use:styleable={$component.styles}>
@@ -172,7 +182,11 @@
       {/if}
     </li>
     {#each repeaterData as item, index}
-      <li class="data-item">
+      <li
+        class="data-item"
+        on:click={moveToCard(item.id)}
+        on:keydown={(event) => moveToCard(event, item.id)}
+      >
         <div class="data-column data-column-general">
           <strong class="data-column-label">#{item[id]}</strong>
           {#if item[title]}
@@ -253,6 +267,7 @@
 
   .data-list {
     display: table;
+    width: 100%;
     padding-left: 0;
     border-spacing: 0 10px;
     list-style: none;
@@ -267,9 +282,11 @@
       rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
       rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     box-sizing: border-box;
+    cursor: pointer;
   }
 
   .data-list .data-item-header {
+    cursor: default;
     box-shadow: none;
     background-color: transparent;
   }
