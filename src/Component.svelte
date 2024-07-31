@@ -82,8 +82,12 @@
     } else if (key === "specialDateTime") {
       return specialDateTimeBuilder(value)
     }
-    const keys = key.split('.');
-    return value[keys] ? value[keys] : '-'
+    
+    if (typeof value[key] === 'object') {
+      return value[key].primaryDisplay ? value[key].primaryDisplay : '-'
+    }
+
+    return value[key] ? value[key] : '-'
   }
 
   const specialRiskValueBuilder = function (value, view) {
