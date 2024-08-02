@@ -114,7 +114,7 @@
       'color: #fff;' +
       'border-radius: 4px;' +
       'background-color: ' + bgColor +
-    ';">' + riskValue + '</div>'
+    ';">' + riskValue ? riskValue : + "-" + '</div>'
 
     return view === 'html' ? htmlResult : riskValue
   }
@@ -143,6 +143,7 @@
 </script>
 
 <div use:styleable={$component.styles}>
+  {#if repeaterData}
   <ul class="data-list">
     <li class="data-item data-item-header sorting-row {sortingStatus.order === "ASC" ? 'sorted-by-asc' : 'sorted-by-desc'}">
       {#if id}
@@ -226,9 +227,18 @@
       </li>
     {/each}
   </ul>
+  {/if}
+  {#if !repeaterData}
+    <p class="no-items">No items in the list.</p>
+  {/if}
 </div>
 
 <style>
+  .no-items {
+    font-size: 20px;
+    text-align: center;
+  }
+  
   .sorting-item {
     display: flex;
     align-items: center;
