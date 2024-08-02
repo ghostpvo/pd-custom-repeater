@@ -93,6 +93,9 @@
 
   const specialRiskValueBuilder = function (value, view) {
     let riskValue = value.Impact * value.Likelihood
+
+    if (!riskValue) riskValue = '-'
+
     let bgColor;
 
     const detectScore = (value) => {
@@ -114,7 +117,7 @@
       'color: #fff;' +
       'border-radius: 4px;' +
       'background-color: ' + bgColor +
-    ';">' + riskValue ? riskValue : + "-" + '</div>'
+    ';">' + riskValue + '</div>'
 
     return view === 'html' ? htmlResult : riskValue
   }
@@ -143,7 +146,7 @@
 </script>
 
 <div use:styleable={$component.styles}>
-  {#if repeaterData}
+  {#if repeaterData.length > 0}
   <ul class="data-list">
     <li class="data-item data-item-header sorting-row {sortingStatus.order === "ASC" ? 'sorted-by-asc' : 'sorted-by-desc'}">
       {#if id}
@@ -228,7 +231,7 @@
     {/each}
   </ul>
   {/if}
-  {#if !repeaterData}
+  {#if !repeaterData < 1}
     <p class="no-items">No items in the list.</p>
   {/if}
 </div>
