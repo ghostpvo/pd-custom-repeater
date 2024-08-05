@@ -8,6 +8,11 @@
     "icon": "Actions",
     "settings": [
       {
+        "type": "text",
+        "key": "pageName",
+        "label": "Page Name"
+      },
+      {
         "type": "schema",
         "key": "data",
         "label": "Data"

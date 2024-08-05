@@ -1,6 +1,7 @@
 <script>
   import { getContext } from "svelte"
 
+  export let pageName
   export let data
   export let id
   export let title
@@ -18,6 +19,27 @@
 
   const { styleable } = getContext("sdk")
   const component = getContext("component")
+
+// ---
+// FILTERING
+  $: filterBy = ''
+
+  const filtering = function () {
+    const regex = new RegExp(filterBy, 'i')
+    repeaterData = filterBy !== '' ? initialData.filter(item => {
+      if (item[title]) {
+        if (item[title].match(regex) || item[desciption].match(regex)) {
+          return true
+        }
+      } else {
+        if (item[desciption].match(regex)) {
+          return true
+        }
+      }
+    }) : initialData
+  }
+// END FILTERING
+// ---
 
 // SORTING SECTION
 // ---
@@ -39,25 +61,31 @@
     // Custom field detecting
     if (sortingSource === 'specialDateTime') {
       sortBy = 'last_edit'
-    }
+    } 
 
-    if (sortingStatus.order === "ASC") {
-      repeaterData.sort((a, b) => {
-        if (a[sortBy] < b[sortBy]) return -1;
-        if (a[sortBy] > b[sortBy]) return 1;
-        return 0;
-      });
-    } else {
-      repeaterData.sort((a, b) => {
-        if (a[sortBy] < b[sortBy]) return 1;
-        if (a[sortBy] > b[sortBy]) return -1;
-        return 0;
-      });
-    }
+    const isAsc = sortingStatus.order === "ASC"
 
-    sortingStatus.order = sortingStatus.order === "ASC" ? "DESC" : "ASC";
+    repeaterData.sort((a, b) => {
+      let aVal = a[sortBy]
+      let bVal = b[sortBy]
 
+      if (aVal === undefined) return isAsc ? -2 : 2
+      if (bVal === undefined) return isAsc ? 1 : -1
+
+      if (typeof aVal === 'object') {
+        aVal = aVal[0].primaryDisplay
+        bVal = bVal[0].primaryDisplay
+      }
+
+      // if (aVal ===  undefined || bVal === undefined) return isAsc ? -2 : 2
+      if (aVal < bVal) return isAsc ? -1 : 1
+      if (aVal > bVal) return isAsc ? 1 : -1
+      return 0
+    })
+
+    sortingStatus.order = isAsc ? "DESC" : "ASC";
     sortingStatus.sortedBy = sortingSource
+
     repeaterData = [...repeaterData]
   }
 // ---
@@ -114,8 +142,8 @@
     const htmlResult = '<div style="display: inline-block; width: 60px; line-height: 30px;' +
       'text-align: center;' + 
       'color: #fff;' +
-      'border-radius: 4px;' +
-      'background-color: ' + bgColor +
+      'border-radius: 4px;' + 
+      'background-color: ' + bgColor + 
     ';">' + riskValue + '</div>'
 
     return view === 'html' ? htmlResult : riskValue
@@ -145,6 +173,16 @@
 </script>
 
 <div use:styleable={$component.styles}>
+  <header class="data-list-header">
+    <h2 class="page-title">{pageName}</h2>
+    <input
+      type="text"
+      class="data-list-search"
+      bind:value={filterBy}
+      on:input={filtering}
+      placeholder="Search in the {pageName}..."
+    >
+  </header>
   {#if repeaterData.length > 0}
   <ul class="data-list">
     <li class="data-item data-item-header sorting-row {sortingStatus.order === "ASC" ? 'sorted-by-asc' : 'sorted-by-desc'}">
@@ -229,15 +267,46 @@
       </li>
     {/each}
   </ul>
+  {:else if repeaterData.length === 0 && initialData.length > 0}
+    <p class="no-items">No matches are here!</p>
+    <span class="no-items-additional">Please change the seatch query.</span>
   {:else}
-    <p class="no-items">No items in the list.</p>
+    <p class="no-items">No items are here!</p>
+    <span class="no-items-additional">Just create a new {pageName.slice(0, -1)} item and it will display here.</span>
   {/if}
 </div>
 
 <style>
+  .data-list-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .page-title {
+    margin: 0 32px 0 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .data-list-search {
+    width: 220px;
+    padding: 7px 14px;
+    font-size: 14px;
+    border: 1px solid #C9C9C9;
+    border-radius: 3px;
+  }
+
   .no-items {
+    margin-bottom: 0;
     font-size: 20px;
     text-align: center;
+  }
+
+  .no-items-additional {
+    display: block;
+    font-size: 14px;
+    text-align: center;
+    color: grey;
   }
   
   .sorting-item {
@@ -284,6 +353,7 @@
   .data-list {
     display: table;
     width: 100%;
+    margin-top: 0;
     padding-left: 0;
     border-spacing: 0 10px;
     list-style: none;
@@ -292,7 +362,7 @@
   .data-list .data-item {
     display: table-row;
     padding: 16px;
-    margin-top: 12px;
+    margin-bottom: 12px;
     background: #fff;
     box-shadow:
       rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
