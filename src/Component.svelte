@@ -65,7 +65,7 @@
 
 // CUSTOM FIELDS SECTION
   // Adding of a value field, which does not come from Budibase
-  const initialData = repeaterData.value.map(i => {
+  const initialData = data.value.map(i => {
     return {
       ...i,
       value: i.Likelihood * i.Impact
