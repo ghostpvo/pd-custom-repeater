@@ -27,15 +27,8 @@
   const filtering = function () {
     const regex = new RegExp(filterBy, 'i')
     repeaterData = filterBy !== '' ? initialData.filter(item => {
-      if (item[title]) {
-        if (item[title].match(regex) || item[desciption].match(regex)) {
-          return true
-        }
-      } else {
-        if (item[desciption].match(regex)) {
-          return true
-        }
-      }
+      if (item[title] && item[title].match(regex)) return true
+      if (item[desciption] && item[desciption].match(regex)) return true
     }) : initialData
   }
 // END FILTERING
@@ -175,13 +168,15 @@
 <div use:styleable={$component.styles}>
   <header class="data-list-header">
     <h2 class="page-title">{pageName}</h2>
-    <input
-      type="text"
-      class="data-list-search"
-      bind:value={filterBy}
-      on:input={filtering}
-      placeholder="Search in the {pageName}..."
-    >
+    <!-- {#if initialData.length === 0} -->
+      <input
+        type="text"
+        class="data-list-search"
+        bind:value={filterBy}
+        on:input={filtering}
+        placeholder="Search in the {pageName}..."
+      >
+    <!-- {/if} -->
   </header>
   {#if repeaterData.length > 0}
   <ul class="data-list">
@@ -238,7 +233,11 @@
           {#if item[title]}
             <h5 class="data-item-title">{item[title]}</h5>
           {/if}
-          <span class="data-column-data">{item[desciption]}</span>
+          {#if item[desciption]}
+            <span class="data-column-data">{item[desciption]}</span>
+          {:else}
+            <span class="data-column-data">-</span>
+          {/if}
         </div>
         {#if additional1}
           <div class="data-column">
