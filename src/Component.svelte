@@ -34,73 +34,6 @@
 // END FILTERING
 // ---
 
-data = [
-  {
-    "End": "2024-02-29T10:00:00.000Z",
-    "Start": "2024-02-01T10:00:00.000Z",
-    "Audit": "ISO27001:2022",
-    "id": 1,
-    "Description": "Internal audit 2024 Q1",
-    "_id": "%5B1%5D",
-    "tableId": "datasource_plus_f4f5852a470d4c7bbe38b520da6e5c5b__Audits",
-    "_rev": "rev",
-    "Conclusions": [
-      {
-        "_id": "%5B1%5D",
-        "primaryDisplay": "Policy hasn't been approved."
-      },
-      {
-        "_id": "%5B3%5D"
-      }
-    ],
-    "Tasks": [
-      {
-        "_id": "%5B1%5D",
-        "primaryDisplay": "Document organisational structure, roles and responsibilities."
-      },
-      {
-        "_id": "%5B29%5D",
-        "primaryDisplay": "Audit Plan"
-      },
-      {
-        "_id": "%5B17%5D",
-        "primaryDisplay": "Update policy"
-      },
-      {
-        "_id": "%5B26%5D",
-        "primaryDisplay": "BCDR test run"
-      },
-      {
-        "_id": "%5B21%5D",
-        "primaryDisplay": "New GW"
-      }
-    ],
-    "Conclusions_text": "Policy hasn't been approved.",
-    "Tasks_text": "Document organisational structure, roles and responsibilities., Audit Plan, Update policy, BCDR test run, New GW"
-  },
-  {
-    "Audit": "ISO 27001 iekšējais audits Q1.2024",
-    "id": 2,
-    "Description": "Apraksts",
-    "_id": "%5B2%5D",
-    "tableId": "datasource_plus_f4f5852a470d4c7bbe38b520da6e5c5b__Audits",
-    "_rev": "rev",
-    "Conclusions": [
-      {
-        "_id": "%5B2%5D"
-      }
-    ],
-    "Tasks": [
-      {
-        "_id": "%5B35%5D",
-        "primaryDisplay": "Jauns uzdevums"
-      }
-    ],
-    "Conclusions_text": "",
-    "Tasks_text": "Jauns uzdevums"
-  }
-]
-
 // SORTING SECTION
 // ---
   // Sorting order and active column info
@@ -153,7 +86,7 @@ data = [
 
 // CUSTOM FIELDS SECTION
   // Adding of a value field, which does not come from Budibase
-  const initialData = data.map(i => {
+  const initialData = data.value.map(i => {
     return {
       ...i,
       value: i.Likelihood * i.Impact
