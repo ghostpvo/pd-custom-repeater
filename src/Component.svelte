@@ -34,6 +34,73 @@
 // END FILTERING
 // ---
 
+data = [
+  {
+    "End": "2024-02-29T10:00:00.000Z",
+    "Start": "2024-02-01T10:00:00.000Z",
+    "Audit": "ISO27001:2022",
+    "id": 1,
+    "Description": "Internal audit 2024 Q1",
+    "_id": "%5B1%5D",
+    "tableId": "datasource_plus_f4f5852a470d4c7bbe38b520da6e5c5b__Audits",
+    "_rev": "rev",
+    "Conclusions": [
+      {
+        "_id": "%5B1%5D",
+        "primaryDisplay": "Policy hasn't been approved."
+      },
+      {
+        "_id": "%5B3%5D"
+      }
+    ],
+    "Tasks": [
+      {
+        "_id": "%5B1%5D",
+        "primaryDisplay": "Document organisational structure, roles and responsibilities."
+      },
+      {
+        "_id": "%5B29%5D",
+        "primaryDisplay": "Audit Plan"
+      },
+      {
+        "_id": "%5B17%5D",
+        "primaryDisplay": "Update policy"
+      },
+      {
+        "_id": "%5B26%5D",
+        "primaryDisplay": "BCDR test run"
+      },
+      {
+        "_id": "%5B21%5D",
+        "primaryDisplay": "New GW"
+      }
+    ],
+    "Conclusions_text": "Policy hasn't been approved.",
+    "Tasks_text": "Document organisational structure, roles and responsibilities., Audit Plan, Update policy, BCDR test run, New GW"
+  },
+  {
+    "Audit": "ISO 27001 iekšējais audits Q1.2024",
+    "id": 2,
+    "Description": "Apraksts",
+    "_id": "%5B2%5D",
+    "tableId": "datasource_plus_f4f5852a470d4c7bbe38b520da6e5c5b__Audits",
+    "_rev": "rev",
+    "Conclusions": [
+      {
+        "_id": "%5B2%5D"
+      }
+    ],
+    "Tasks": [
+      {
+        "_id": "%5B35%5D",
+        "primaryDisplay": "Jauns uzdevums"
+      }
+    ],
+    "Conclusions_text": "",
+    "Tasks_text": "Jauns uzdevums"
+  }
+]
+
 // SORTING SECTION
 // ---
   // Sorting order and active column info
@@ -86,7 +153,7 @@
 
 // CUSTOM FIELDS SECTION
   // Adding of a value field, which does not come from Budibase
-  const initialData = data.value.map(i => {
+  const initialData = data.map(i => {
     return {
       ...i,
       value: i.Likelihood * i.Impact
@@ -98,15 +165,24 @@
   // 'specialRiskValue': Computed field by "likelihood" and "Impact" values and colored by priority
   // 'specialDateTime': UI friendly parsed Date (YYYY.MM.DD HH:mm)
   const fieldParser = function (value, key) {
-    if (key === "specialRiskValue") {
+    const pairedKey = key.split('-') // Solution for cases when is needed to paste different keys with special values directly
+    let specialIndication = null
+
+    if (pairedKey.length === 2) {
+      specialIndication = pairedKey[0]
+      key = pairedKey[1]
+    } else {
+      specialIndication = key
+    }
+
+    if (specialIndication === "specialRiskValue") {
       return specialRiskValueBuilder(value, 'html')
-    } else if (key === "specialDateTime") {
-      return specialDateTimeBuilder(value, key)
+    } else if (specialIndication === "specialDateTime") {
+      return specialDateTimeBuilder(value[key])
     }
     
     if (typeof value[key] === 'object') {
       return value[key][0].primaryDisplay;
-      // return value[key].primaryDisplay ? value[key].primaryDisplay : '-'
     }
 
     return value[key] ? value[key] : '-'
@@ -142,11 +218,10 @@
     return view === 'html' ? htmlResult : riskValue
   }
 
-  const specialDateTimeBuilder = function (value, key) {
-    const fieldKey = key.split('-')[1]
-    const dateString = fieldKey ? value[fieldKey] : value.last_edit
+  const specialDateTimeBuilder = function (value) {
+    if (!value) return '-'
 
-    const [datePart, timePart] = dateString.split("T")
+    const [datePart, timePart] = value.split("T")
     let [year, month, day] = datePart.split("-").map(String)
     let [hours, minutes] = timePart.split(":").map(String)
 
