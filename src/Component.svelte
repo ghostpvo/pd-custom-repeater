@@ -101,7 +101,7 @@
     if (key === "specialRiskValue") {
       return specialRiskValueBuilder(value, 'html')
     } else if (key === "specialDateTime") {
-      return specialDateTimeBuilder(value)
+      return specialDateTimeBuilder(value, key)
     }
     
     if (typeof value[key] === 'object') {
@@ -142,8 +142,9 @@
     return view === 'html' ? htmlResult : riskValue
   }
 
-  const specialDateTimeBuilder = function (value) {
-    const dateString = value.last_edit
+  const specialDateTimeBuilder = function (value, key) {
+    const fieldKey = key.split('-')[1]
+    const dateString = fieldKey ? value[fieldKey] : value.last_edit
 
     const [datePart, timePart] = dateString.split("T")
     let [year, month, day] = datePart.split("-").map(String)
